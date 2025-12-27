@@ -62,3 +62,5 @@ Actively maintained by Xanadu
 - PennyLane: Automatic differentiation of hybrid quantum-classical computations (2022)
 - Quantum machine learning with PennyLane (2020)
 
+
+

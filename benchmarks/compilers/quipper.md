@@ -52,3 +52,5 @@ Research/academic project
 - Quipper: A Scalable Quantum Programming Language (PLDI 2013)
 - An Introduction to Quantum Programming in Quipper (2013)
 
+
+
