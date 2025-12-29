@@ -185,27 +185,47 @@ try:
     print("   - Compiled programs ready for execution")
     print("   - Supports classical control and feedback")
 
-    # Step 9: Compilation output format
+    # Step 9: Output compiled program as Quil (hardware instruction format)
     print("\n" + "=" * 70)
-    print("[Step 9] Compilation Output Format")
+    print("[Step 9] Compiled Program Output (Quil Hardware Instructions)")
+    print("=" * 70)
+    print("   The compiler outputs a low-level circuit in Quil format")
+    print("   - Quil is a hardware instruction set format")
+    print("   - This is the compiled program output, not execution results")
+    
+    if compiled_prog:
+        print("\n[Compiled Program - Quil Format]:")
+        print("-" * 70)
+        print(str(compiled_prog.program))
+        print("-" * 70)
+    else:
+        print("\n[Original Program - Quil Format]:")
+        print("-" * 70)
+        print(str(prog))
+        print("-" * 70)
+        print("\n[Note] Compiled version requires QVM server")
+    
+    # Step 10: Compilation output format
+    print("\n" + "=" * 70)
+    print("[Step 10] Compilation Output Format")
     print("=" * 70)
     
     print("\n[Output Structure]:")
     print("   - Type: CompiledProgram object")
     print("   - Contains: Compiled Quil Program")
-    print("   - Format: Quil text instructions")
+    print("   - Format: Quil text instructions (hardware instruction set)")
     print("   - Can be executed on QVM or QPU")
     
     if compiled_prog:
         print("\n[Compiled Program Format]:")
-        print("   - Still Quil format (text-based)")
+        print("   - Quil format (text-based hardware instructions)")
         print("   - Optimized instruction sequence")
         print("   - Native to target processor")
         print("   - Wrapped in CompiledProgram container")
     
-    # Step 10: Comparison with original
+    # Step 11: Comparison with original
     print("\n" + "=" * 70)
-    print("[Step 10] Original vs Compiled Comparison")
+    print("[Step 11] Original vs Compiled Comparison")
     print("=" * 70)
     
     print("\n[Original Program]:")
@@ -231,7 +251,8 @@ try:
     print("- quilc compiler optimizes and compiles Quil programs")
     print("- IR structure: Program object containing instruction sequences")
     print("- Compilation via qc.compile() method")
-    print("- Output: Compiled Quil program (still Quil format)")
+    print("- Output: Compiled Quil program (hardware instruction format)")
+    print("- Quil is a hardware instruction set, not execution results")
     print("- Supports hardware-specific optimizations")
 
 except ImportError:

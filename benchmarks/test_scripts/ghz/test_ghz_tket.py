@@ -149,21 +149,50 @@ try:
     print("   - Supports multiple backends (Qiskit, Cirq, etc.)")
     print("   - Compilation is explicit (must call get_compiled_circuit())")
 
-    # Step 8: Compilation output format
+    # Step 8: Output compiled circuit as OpenQASM (low-level hardware instructions)
     print("\n" + "=" * 70)
-    print("[Step 8] Compilation Output Format")
+    print("[Step 8] Compiled Circuit Output (OpenQASM Format)")
+    print("=" * 70)
+    print("   The compiler outputs a low-level circuit in OpenQASM format")
+    print("   - OpenQASM is a hardware instruction set format")
+    print("   - This is the compiled program output, not execution results")
+    
+    try:
+        # Convert to OpenQASM
+        from pytket.qasm import circuit_to_qasm_str
+        openqasm_str = circuit_to_qasm_str(compiled_circuit)
+        print("\n[Compiled Circuit - OpenQASM]:")
+        print("-" * 70)
+        print(openqasm_str)
+        print("-" * 70)
+    except:
+        try:
+            # Alternative method
+            openqasm_str = compiled_circuit.get_qasm_str()
+            print("\n[Compiled Circuit - OpenQASM]:")
+            print("-" * 70)
+            print(openqasm_str)
+            print("-" * 70)
+        except:
+            print("\n[Note] OpenQASM export not available, showing circuit structure")
+            print("\n[Compiled Circuit Structure]:")
+            print(compiled_circuit)
+    
+    # Step 9: Compilation output format
+    print("\n" + "=" * 70)
+    print("[Step 9] Compilation Output Format")
     print("=" * 70)
     print("   The compiled output is:")
     print("   - A Circuit object (same type as input)")
     print("   - Contains optimized gate sequence")
-    print("   - Ready for backend execution")
-    print("   - Can be converted to text formats (QASM, Quil)")
+    print("   - Can be exported to OpenQASM (hardware instruction format)")
+    print("   - Can be converted to other text formats (Quil, etc.)")
     
     print("\n[Output Characteristics]:")
     print("   - Format: Circuit object (Python class)")
     print("   - Structure: Optimized command sequence")
-    print("   - Format: Not binary, but structured Python object")
-    print("   - Can be serialized to text/binary formats")
+    print("   - Can be serialized to OpenQASM (hardware instructions)")
+    print("   - Can be serialized to other text/binary formats")
     
     print("\n" + "=" * 70)
     print("COMPILATION ANALYSIS COMPLETE")
@@ -173,6 +202,7 @@ try:
     print("- Compilation via get_compiled_circuit() method")
     print("- Applies optimization passes during compilation")
     print("- Output: Optimized Circuit object")
+    print("- Can export to OpenQASM (hardware instruction format)")
     print("- Circuit can be converted to various formats")
     print("- Supports multiple backend targets")
 

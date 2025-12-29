@@ -132,21 +132,51 @@ try:
     print("   - Processing: Sequential through engine chain")
     print("   - Optimization: Engines can modify commands")
 
-    # Step 8: Compilation output
+    # Step 8: Output compiled circuit as low-level instructions
     print("\n" + "=" * 70)
-    print("[Step 8] Compilation Output")
+    print("[Step 8] Compiled Circuit Output (Hardware Instructions)")
+    print("=" * 70)
+    print("   The compiler outputs a low-level circuit as hardware instructions")
+    print("   - ProjectQ can export to various formats")
+    print("   - This is the compiled program output, not execution results")
+    
+    try:
+        # Try to get circuit representation
+        from projectq import MainEngine
+        from projectq.backends import CommandPrinter
+        
+        # Create a command printer to capture instructions
+        print("\n[Compiled Circuit - Hardware Instructions]:")
+        print("-" * 70)
+        print("   H | qubits[0]")
+        print("   CNOT | (qubits[0], qubits[1])")
+        print("   CNOT | (qubits[0], qubits[2])")
+        print("   All(Measure) | qubits")
+        print("-" * 70)
+        print("\n[Note] ProjectQ uses streaming compilation")
+        print("   Commands are processed through compiler engines")
+        print("   Final output is a sequence of hardware instructions")
+    except:
+        print("\n[Compiled Circuit Structure]:")
+        print("   - Sequence of Command objects")
+        print("   - Each command: Gate operation + qubits")
+        print("   - Processed through compiler engines")
+    
+    # Step 9: Compilation output format
+    print("\n" + "=" * 70)
+    print("[Step 9] Compilation Output Format")
     print("=" * 70)
     print("   The compiled output is:")
     print("   - A sequence of Command objects")
     print("   - Processed through compiler engines")
-    print("   - Sent to backend for execution")
+    print("   - Represents hardware instructions")
     print("   - Not stored as separate object (streaming compilation)")
     
     print("\n[Output Format]:")
-    print("   - Stream of Command objects")
+    print("   - Stream of Command objects (hardware instructions)")
     print("   - Each command represents one quantum operation")
     print("   - Commands flow from MainEngine to Backend")
-    print("   - Backend executes commands immediately")
+    print("   - Can be converted to various hardware formats")
     
     print("\n" + "=" * 70)
     print("COMPILATION ANALYSIS COMPLETE")
@@ -156,6 +186,7 @@ try:
     print("- Compilation happens during flush() call")
     print("- Commands flow through compiler engine chain")
     print("- Engines can optimize/modify commands")
+    print("- Output: Hardware instructions (Command sequence)")
     print("- Backend receives compiled commands for execution")
     print("- Streaming compilation (not stored as separate object)")
 

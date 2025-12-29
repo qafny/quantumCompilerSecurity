@@ -143,28 +143,56 @@ try:
     else:
         print("   (No gates found - circuit may be empty)")
     
-    # Step 7: Qiskit IR (QuantumCircuit object) analysis
+    # Step 7: Output compiled circuit as OpenQASM (low-level hardware instructions)
     print("\n" + "=" * 70)
-    print("[Step 7] Intermediate Representation (IR) Analysis")
+    print("[Step 7] Compiled Circuit Output (OpenQASM Format)")
+    print("=" * 70)
+    print("   The compiler outputs a low-level circuit in OpenQASM format")
+    print("   - OpenQASM is a hardware instruction set format")
+    print("   - This is the compiled program output, not execution results")
+    
+    try:
+        # Output OpenQASM 2.0 format
+        openqasm_str = compiled_level1.qasm()
+        print("\n[Compiled Circuit - OpenQASM 2.0]:")
+        print("-" * 70)
+        print(openqasm_str)
+        print("-" * 70)
+    except:
+        try:
+            # Try OpenQASM 3.0 if available
+            from qiskit import qasm2
+            openqasm_str = qasm2.dumps(compiled_level1)
+            print("\n[Compiled Circuit - OpenQASM 3.0]:")
+            print("-" * 70)
+            print(openqasm_str)
+            print("-" * 70)
+        except:
+            print("\n[Note] OpenQASM export not available, showing circuit structure")
+    
+    # Step 8: Qiskit IR (QuantumCircuit object) analysis
+    print("\n" + "=" * 70)
+    print("[Step 8] Intermediate Representation (IR) Analysis")
     print("=" * 70)
     print("   Qiskit uses QuantumCircuit objects as its IR")
     print(f"   - Type: {type(compiled_level1)}")
     print(f"   - Data structure: List of Instruction objects")
     print(f"   - Instructions stored in: circuit.data")
     print(f"   - Total instructions: {len(compiled_level1.data)}")
+    print("   - Can be exported to OpenQASM (hardware instruction format)")
     
-    # Step 8: How the circuit is consumed/executed
+    # Step 9: How the circuit is consumed/executed
     print("\n" + "=" * 70)
-    print("[Step 8] Circuit Consumption and Execution")
+    print("[Step 9] Circuit Consumption and Execution")
     print("=" * 70)
     print("   The compiled QuantumCircuit can be:")
-    print("   1. Executed directly on simulators (AerSimulator)")
-    print("   2. Submitted to hardware backends via IBM Quantum")
-    print("   3. Further optimized or modified")
-    print("   4. Converted to other formats (QASM, Qobj)")
+    print("   1. Exported to OpenQASM (hardware instruction format)")
+    print("   2. Executed directly on simulators (AerSimulator)")
+    print("   3. Submitted to hardware backends via IBM Quantum")
+    print("   4. Further optimized or modified")
     
     print("\n   Execution pipeline:")
-    print("   QuantumCircuit -> Transpiler -> Qobj -> Backend -> Results")
+    print("   QuantumCircuit -> Transpiler -> OpenQASM -> Backend -> Results")
     
     print("\n" + "=" * 70)
     print("COMPILATION ANALYSIS COMPLETE")
@@ -174,7 +202,8 @@ try:
     print("- Optimization levels can affect circuit structure")
     print("- IR: QuantumCircuit object (Python class)")
     print("- Compiled circuits maintain gate structure but may be optimized")
-    print("- Circuit is consumed via backend.run() method")
+    print("- Output: OpenQASM format (hardware instruction set)")
+    print("- Circuit can be exported to OpenQASM before execution")
 
 except ImportError:
     print("\n❌ ERROR: Qiskit not installed")
