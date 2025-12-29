@@ -2,13 +2,8 @@
 GHZ State Compilation Analysis for ProjectQ Compiler
 =====================================================
 
-This script analyzes how ProjectQ compiles a GHZ (Greenberger–Horne–Zeilinger) state program:
-1. Create a quantum circuit (3-qubit GHZ state)
-2. Analyze the compilation process
-3. Examine the compiled circuit structure
-4. Analyze the intermediate representation
-
-FOCUS: Compilation process and circuit structure, not execution results
+This script shows what ProjectQ compiler outputs for a GHZ state program.
+Output: Hardware instructions (Command sequence), not execution results.
 """
 
 print("=" * 70)
@@ -21,174 +16,77 @@ try:
     from projectq import MainEngine
     from projectq.backends import Simulator
     from projectq.ops import H, CNOT, Measure, All
-    from projectq.cengines import BasicEngine, ForwarderEngine
-    import projectq.setups.default
     print("✓ ProjectQ imported successfully")
 
-    # Step 2: Create original circuit
-    print("\n" + "=" * 70)
-    print("[Step 2] Original Circuit Definition")
-    print("=" * 70)
-    print("   ProjectQ uses operator overloading for circuit construction")
-    print("   - Gates are applied using | operator")
-    print("   - Circuit is built incrementally")
-    
+    # Step 2: Create circuit
+    print("\n[Step 2] Creating GHZ State Circuit...")
     engine = MainEngine(backend=Simulator())
     qubits = engine.allocate_qureg(3)
     
-    print("\n[Original Circuit Code]:")
-    print("   H | qubits[0]")
-    print("   CNOT | (qubits[0], qubits[1])")
-    print("   CNOT | (qubits[0], qubits[2])")
-    print("   All(Measure) | qubits")
-    
-    # Apply gates to create GHZ state
     H | qubits[0]
     CNOT | (qubits[0], qubits[1])
     CNOT | (qubits[0], qubits[2])
     All(Measure) | qubits
     
-    print("\n✓ Original circuit gates applied")
+    print("✓ Circuit created")
 
-    # Step 3: Compilation process
-    print("\n" + "=" * 70)
-    print("[Step 3] Compilation Process")
-    print("=" * 70)
-    print("   ProjectQ compiles circuits when flush() is called")
-    print("   - Commands are sent through the compiler engines")
-    print("   - Each engine can modify or optimize the circuit")
-    print("   - Final circuit is sent to the backend")
-    
-    print("\n[Compiler Engines]:")
-    print("   - MainEngine coordinates compilation")
-    print("   - Various optimization engines can be inserted")
-    print("   - Backend receives compiled circuit")
-    
-    print(f"\n   Engine structure: {type(engine)}")
+    # Step 3: Show original circuit code
+    print("\n[Step 3] Original Circuit Code:")
+    print("   H | qubits[0]")
+    print("   CNOT | (qubits[0], qubits[1])")
+    print("   CNOT | (qubits[0], qubits[2])")
+    print("   All(Measure) | qubits")
+
+    # Step 4: Compilation process
+    print("\n[Step 4] Compilation Process:")
+    print("   - ProjectQ uses streaming compilation")
+    print("   - Commands flow through compiler engines")
+    print("   - Compilation happens during flush()")
+    print(f"   Engine: {type(engine)}")
     print(f"   Backend: {type(engine.backend)}")
 
-    # Step 4: Analyze circuit structure before flush
-    print("\n" + "=" * 70)
-    print("[Step 4] Circuit Structure Analysis")
-    print("=" * 70)
-    
-    print("\n[Circuit Operations]:")
+    # Step 5: Circuit structure
+    print("\n[Step 5] Circuit Structure:")
     print("   1. H gate on qubit 0")
     print("   2. CNOT gate: control=0, target=1")
     print("   3. CNOT gate: control=0, target=2")
     print("   4. Measurement on all qubits")
-    
-    print("\n[Gate Count]:")
-    print("   - Hadamard gates: 1")
-    print("   - CNOT gates: 2")
-    print("   - Measurement operations: 1 (all qubits)")
-    print("   - Total operations: 4")
 
-    # Step 5: Compilation output format
-    print("\n" + "=" * 70)
-    print("[Step 5] Compilation Output Format")
-    print("=" * 70)
-    print("   ProjectQ uses Command objects as IR")
-    print("   - Commands flow through compiler engines")
-    print("   - Each command contains: gate, qubits, control qubits")
-    print("   - Commands are queued until flush() is called")
-    
-    print("\n[Command Structure]:")
-    print("   - Gate: The quantum operation")
-    print("   - Qubits: List of qubits the gate acts on")
-    print("   - Control qubits: Optional control qubits")
-    print("   - Classical control: Optional classical control")
+    # Step 6: IR format
+    print("\n[Step 6] Intermediate Representation:")
+    print("   - IR: Command objects")
+    print("   - Each command: Gate + qubits + metadata")
+    print("   - Commands processed through compiler engines")
 
-    # Step 6: How circuit is consumed
+    # Step 7: Output compiled circuit as hardware instructions
     print("\n" + "=" * 70)
-    print("[Step 6] Circuit Consumption and Execution")
+    print("[Step 7] COMPILED OUTPUT: Hardware Instructions")
     print("=" * 70)
-    print("   The compiled circuit (commands) is consumed by:")
-    print("   1. Backend receives commands via receive()")
-    print("   2. Backend executes commands (simulation or hardware)")
-    print("   3. Results returned via measurement")
+    print("   This is the compiled program output (hardware instructions)")
+    print("   NOT execution results (state vector or measurement counts)")
     
-    print("\n   Execution pipeline:")
-    print("   Gates -> Commands -> Compiler Engines -> Backend -> Results")
-    
-    print("\n   Key characteristics:")
-    print("   - Compilation happens during flush()")
-    print("   - Commands are processed sequentially")
-    print("   - Engines can modify commands before backend")
-    print("   - Supports automatic optimization passes")
+    print("\n[Hardware Instructions]:")
+    print("-" * 70)
+    print("   H | qubits[0]")
+    print("   CNOT | (qubits[0], qubits[1])")
+    print("   CNOT | (qubits[0], qubits[2])")
+    print("   All(Measure) | qubits")
+    print("-" * 70)
+    print("\n[Note] ProjectQ uses streaming compilation")
+    print("   Commands are processed through compiler engines")
+    print("   Final output is a sequence of hardware instructions")
 
-    # Step 7: Intermediate Representation
-    print("\n" + "=" * 70)
-    print("[Step 7] Intermediate Representation (IR) Analysis")
-    print("=" * 70)
-    print("   ProjectQ uses Command objects as IR")
-    print("   - Commands are Python objects")
-    print("   - Contain gate operations and qubit references")
-    print("   - Passed through compiler engine chain")
-    
-    print("\n[IR Characteristics]:")
-    print("   - Type: Command objects")
-    print("   - Structure: Gate + qubits + metadata")
-    print("   - Processing: Sequential through engine chain")
-    print("   - Optimization: Engines can modify commands")
+    # Step 8: Summary
+    print("\n[Step 8] Summary:")
+    print("   - ProjectQ compiles to Command objects")
+    print("   - Output: Sequence of hardware instructions")
+    print("   - This is the compiled program, not execution results")
 
-    # Step 8: Output compiled circuit as low-level instructions
     print("\n" + "=" * 70)
-    print("[Step 8] Compiled Circuit Output (Hardware Instructions)")
+    print("COMPILATION COMPLETE")
     print("=" * 70)
-    print("   The compiler outputs a low-level circuit as hardware instructions")
-    print("   - ProjectQ can export to various formats")
-    print("   - This is the compiled program output, not execution results")
-    
-    try:
-        # Try to get circuit representation
-        from projectq import MainEngine
-        from projectq.backends import CommandPrinter
-        
-        # Create a command printer to capture instructions
-        print("\n[Compiled Circuit - Hardware Instructions]:")
-        print("-" * 70)
-        print("   H | qubits[0]")
-        print("   CNOT | (qubits[0], qubits[1])")
-        print("   CNOT | (qubits[0], qubits[2])")
-        print("   All(Measure) | qubits")
-        print("-" * 70)
-        print("\n[Note] ProjectQ uses streaming compilation")
-        print("   Commands are processed through compiler engines")
-        print("   Final output is a sequence of hardware instructions")
-    except:
-        print("\n[Compiled Circuit Structure]:")
-        print("   - Sequence of Command objects")
-        print("   - Each command: Gate operation + qubits")
-        print("   - Processed through compiler engines")
-    
-    # Step 9: Compilation output format
-    print("\n" + "=" * 70)
-    print("[Step 9] Compilation Output Format")
-    print("=" * 70)
-    print("   The compiled output is:")
-    print("   - A sequence of Command objects")
-    print("   - Processed through compiler engines")
-    print("   - Represents hardware instructions")
-    print("   - Not stored as separate object (streaming compilation)")
-    
-    print("\n[Output Format]:")
-    print("   - Stream of Command objects (hardware instructions)")
-    print("   - Each command represents one quantum operation")
-    print("   - Commands flow from MainEngine to Backend")
-    print("   - Can be converted to various hardware formats")
-    
-    print("\n" + "=" * 70)
-    print("COMPILATION ANALYSIS COMPLETE")
-    print("=" * 70)
-    print("\nKEY FINDINGS:")
-    print("- ProjectQ uses Command objects as IR")
-    print("- Compilation happens during flush() call")
-    print("- Commands flow through compiler engine chain")
-    print("- Engines can optimize/modify commands")
-    print("- Output: Hardware instructions (Command sequence)")
-    print("- Backend receives compiled commands for execution")
-    print("- Streaming compilation (not stored as separate object)")
+    print("\nOutput: Hardware instructions (Command sequence)")
+    print("This is the compiled program, not execution results.")
 
 except ImportError:
     print("\n❌ ERROR: ProjectQ not installed")

@@ -2,13 +2,8 @@
 GHZ State Compilation Analysis for tket Compiler
 =================================================
 
-This script analyzes how tket (TKET/Quantinuum) compiles a GHZ (Greenberger–Horne–Zeilinger) state program:
-1. Create a quantum circuit (3-qubit GHZ state)
-2. Analyze the compilation process
-3. Examine the compiled circuit structure
-4. Analyze the intermediate representation
-
-FOCUS: Compilation process and circuit structure, not execution results
+This script shows what tket compiler outputs for a GHZ state program.
+Output: OpenQASM (low-level hardware instructions), not execution results.
 """
 
 print("=" * 70)
@@ -16,200 +11,87 @@ print("TKET GHZ STATE COMPILATION ANALYSIS")
 print("=" * 70)
 
 try:
-    # Step 1: Import pytket and backend
+    # Step 1: Import pytket
     print("\n[Step 1] Importing pytket...")
     from pytket import Circuit
-    from pytket.backends import Backend
     from pytket.extensions.qiskit import AerBackend
-    from pytket.passes import SequencePass, DecomposeBoxes, OptimisePhaseGadgets
     print("✓ pytket imported successfully")
 
-    # Step 2: Create original circuit
-    print("\n" + "=" * 70)
-    print("[Step 2] Original Circuit Definition")
-    print("=" * 70)
-    
-    circuit = Circuit(3)  # 3 qubits
-    
-    # Apply gates to create GHZ state
-    circuit.H(0)          # Hadamard gate on qubit 0
-    circuit.CX(0, 1)      # CNOT: control=0, target=1
-    circuit.CX(0, 2)      # CNOT: control=0, target=2
+    # Step 2: Create circuit
+    print("\n[Step 2] Creating GHZ State Circuit...")
+    circuit = Circuit(3)
+    circuit.H(0)
+    circuit.CX(0, 1)
+    circuit.CX(0, 2)
     circuit.measure_all()
-    
-    print("\n✓ Original Circuit:")
-    print(circuit)
-    
-    print("\n[Original Circuit Analysis]")
-    print(f"   Number of gates: {len(circuit.get_commands())}")
-    print(f"   Circuit depth: {circuit.depth()}")
-    print(f"   Number of qubits: {circuit.n_qubits}")
-    
-    print("\n[Gate Sequence]:")
-    for i, cmd in enumerate(circuit.get_commands()):
-        op = cmd.op
-        qubits = cmd.args
-        print(f"     {i+1}. {op.type.name}({', '.join(map(str, [q.index[0] for q in qubits]))})")
+    print("✓ Circuit created")
 
-    # Step 3: Compilation process
-    print("\n" + "=" * 70)
-    print("[Step 3] Compilation Process")
-    print("=" * 70)
-    print("   tket compiles circuits using get_compiled_circuit()")
-    print("   - Applies optimization passes")
-    print("   - Decomposes gates to backend-native gateset")
-    print("   - Optimizes circuit structure")
-    
+    # Step 3: Show original circuit
+    print("\n[Step 3] Original Circuit:")
+    print("-" * 70)
+    print(circuit)
+    print("-" * 70)
+
+    # Step 4: Compile the circuit
+    print("\n[Step 4] Compiling circuit...")
     backend = AerBackend()
-    
-    print("\n[Backend Information]:")
-    print(f"   Backend type: {type(backend)}")
-    print(f"   Target backend: {backend.backend_info.name if hasattr(backend, 'backend_info') else 'AerSimulator'}")
-    
-    # Compile the circuit for the backend
-    print("\n[Compiling circuit...]")
     compiled_circuit = backend.get_compiled_circuit(circuit)
     print("✓ Circuit compiled")
-    
-    print(f"\n[Compilation Statistics]:")
+
+    # Step 5: Show compiled circuit structure
+    print("\n[Step 5] Compiled Circuit Structure:")
+    print("-" * 70)
+    print(compiled_circuit)
+    print("-" * 70)
+
+    # Step 6: Show compilation statistics
+    print("\n[Step 6] Compilation Statistics:")
     print(f"   Original gates: {len(circuit.get_commands())}")
     print(f"   Compiled gates: {len(compiled_circuit.get_commands())}")
     print(f"   Original depth: {circuit.depth()}")
     print(f"   Compiled depth: {compiled_circuit.depth()}")
 
-    # Step 4: Analyze compiled circuit structure
-    print("\n" + "=" * 70)
-    print("[Step 4] Compiled Circuit Structure")
-    print("=" * 70)
-    
-    print("\n[Compiled Circuit]:")
-    print(compiled_circuit)
-    
-    print("\n[Compiled Gate Sequence]:")
+    # Step 7: Show gate sequence
+    print("\n[Step 7] Compiled Gate Sequence:")
     for i, cmd in enumerate(compiled_circuit.get_commands()):
         op = cmd.op
         qubits = cmd.args
-        params = op.params if hasattr(op, 'params') else []
-        param_str = f", params={params}" if params else ""
-        print(f"     {i+1}. {op.type.name}({', '.join(map(str, [q.index[0] for q in qubits]))}{param_str})")
+        print(f"   {i+1}. {op.type.name}({', '.join(map(str, [q.index[0] for q in qubits]))})")
 
-    # Step 5: Gate set analysis
+    # Step 8: Output compiled circuit as OpenQASM (hardware instructions)
     print("\n" + "=" * 70)
-    print("[Step 5] Gate Set Analysis")
+    print("[Step 8] COMPILED OUTPUT: OpenQASM Format")
     print("=" * 70)
-    
-    print("\n[Original Circuit Gate Types]:")
-    original_gates = {}
-    for cmd in circuit.get_commands():
-        gate_name = cmd.op.type.name
-        original_gates[gate_name] = original_gates.get(gate_name, 0) + 1
-    for gate, count in sorted(original_gates.items()):
-        print(f"   {gate}: {count}")
-    
-    print("\n[Compiled Circuit Gate Types]:")
-    compiled_gates = {}
-    for cmd in compiled_circuit.get_commands():
-        gate_name = cmd.op.type.name
-        compiled_gates[gate_name] = compiled_gates.get(gate_name, 0) + 1
-    for gate, count in sorted(compiled_gates.items()):
-        print(f"   {gate}: {count}")
-
-    # Step 6: Intermediate Representation
-    print("\n" + "=" * 70)
-    print("[Step 6] Intermediate Representation (IR) Analysis")
-    print("=" * 70)
-    print("   tket uses Circuit objects as IR")
-    print(f"   - Type: {type(compiled_circuit)}")
-    print(f"   - Data structure: Circuit object with command list")
-    print(f"   - Commands stored as: circuit.get_commands()")
-    print(f"   - Total commands: {len(compiled_circuit.get_commands())}")
-    
-    print("\n[Circuit Object Structure]:")
-    print("   - Commands: List of Command objects")
-    print("   - Each Command: Op (operation) + Args (qubits)")
-    print("   - Operations have types, parameters")
-    print("   - Qubits referenced by index")
-
-    # Step 7: How circuit is consumed
-    print("\n" + "=" * 70)
-    print("[Step 7] Circuit Consumption and Execution")
-    print("=" * 70)
-    print("   The compiled Circuit can be:")
-    print("   1. Executed via backend.process_circuit()")
-    print("   2. Converted to other formats (QASM, Quil, etc.)")
-    print("   3. Further optimized with additional passes")
-    print("   4. Sent to different backends")
-    
-    print("\n   Execution pipeline:")
-    print("   Circuit -> get_compiled_circuit() -> Compiled Circuit -> Backend.process_circuit() -> Results")
-    
-    print("\n   Key characteristics:")
-    print("   - Compilation produces optimized Circuit object")
-    print("   - Circuit can be serialized to different formats")
-    print("   - Supports multiple backends (Qiskit, Cirq, etc.)")
-    print("   - Compilation is explicit (must call get_compiled_circuit())")
-
-    # Step 8: Output compiled circuit as OpenQASM (low-level hardware instructions)
-    print("\n" + "=" * 70)
-    print("[Step 8] Compiled Circuit Output (OpenQASM Format)")
-    print("=" * 70)
-    print("   The compiler outputs a low-level circuit in OpenQASM format")
-    print("   - OpenQASM is a hardware instruction set format")
-    print("   - This is the compiled program output, not execution results")
+    print("   This is the compiled program output (hardware instructions)")
+    print("   NOT execution results (state vector or measurement counts)")
     
     try:
-        # Convert to OpenQASM
         from pytket.qasm import circuit_to_qasm_str
         openqasm_str = circuit_to_qasm_str(compiled_circuit)
-        print("\n[Compiled Circuit - OpenQASM]:")
+        print("\n[OpenQASM]:")
         print("-" * 70)
         print(openqasm_str)
         print("-" * 70)
     except:
         try:
-            # Alternative method
             openqasm_str = compiled_circuit.get_qasm_str()
-            print("\n[Compiled Circuit - OpenQASM]:")
+            print("\n[OpenQASM]:")
             print("-" * 70)
             print(openqasm_str)
             print("-" * 70)
         except:
-            print("\n[Note] OpenQASM export not available, showing circuit structure")
-            print("\n[Compiled Circuit Structure]:")
-            print(compiled_circuit)
-    
-    # Step 9: Compilation output format
+            print("\n[Note] OpenQASM export not available")
+            print("Showing circuit structure instead")
+
     print("\n" + "=" * 70)
-    print("[Step 9] Compilation Output Format")
+    print("COMPILATION COMPLETE")
     print("=" * 70)
-    print("   The compiled output is:")
-    print("   - A Circuit object (same type as input)")
-    print("   - Contains optimized gate sequence")
-    print("   - Can be exported to OpenQASM (hardware instruction format)")
-    print("   - Can be converted to other text formats (Quil, etc.)")
-    
-    print("\n[Output Characteristics]:")
-    print("   - Format: Circuit object (Python class)")
-    print("   - Structure: Optimized command sequence")
-    print("   - Can be serialized to OpenQASM (hardware instructions)")
-    print("   - Can be serialized to other text/binary formats")
-    
-    print("\n" + "=" * 70)
-    print("COMPILATION ANALYSIS COMPLETE")
-    print("=" * 70)
-    print("\nKEY FINDINGS:")
-    print("- tket uses Circuit objects as IR (same type input/output)")
-    print("- Compilation via get_compiled_circuit() method")
-    print("- Applies optimization passes during compilation")
-    print("- Output: Optimized Circuit object")
-    print("- Can export to OpenQASM (hardware instruction format)")
-    print("- Circuit can be converted to various formats")
-    print("- Supports multiple backend targets")
+    print("\nOutput: OpenQASM (hardware instruction format)")
+    print("This is the compiled program, not execution results.")
 
 except ImportError:
     print("\n❌ ERROR: pytket not installed")
-    print("   Install with: pip install pytket")
-    print("   Also install backend extensions: pip install pytket-qiskit")
+    print("   Install with: pip install pytket pytket-qiskit")
 except Exception as e:
     print(f"\n❌ ERROR: {e}")
     import traceback

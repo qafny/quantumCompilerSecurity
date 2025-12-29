@@ -2,13 +2,8 @@
 GHZ State Compilation Analysis for PennyLane Compiler
 ======================================================
 
-This script analyzes how PennyLane compiles a GHZ (Greenberger–Horne–Zeilinger) state program:
-1. Create a quantum circuit (3-qubit GHZ state) as a Python function
-2. Analyze how PennyLane processes and compiles the function
-3. Examine the compiled circuit structure
-4. Analyze the intermediate representation
-
-FOCUS: Compilation process and circuit structure, not execution results
+This script shows what PennyLane compiler outputs for a GHZ state program.
+Output: OpenQASM (low-level hardware instructions), not execution results.
 """
 
 print("=" * 70)
@@ -19,201 +14,86 @@ try:
     # Step 1: Import PennyLane
     print("\n[Step 1] Importing PennyLane...")
     import pennylane as qml
-    import numpy as np
     print("✓ PennyLane imported successfully")
-    print(f"   PennyLane version: {qml.__version__}")
 
-    # Step 2: Create device and define circuit as a function
-    print("\n" + "=" * 70)
-    print("[Step 2] Circuit Definition (Quantum Function)")
-    print("=" * 70)
-    print("   PennyLane uses Python functions as circuit definitions")
-    print("   - Functions decorated with @qml.qnode become quantum circuits")
-    print("   - Device specifies the compilation target")
-    
+    # Step 2: Create device and define circuit
+    print("\n[Step 2] Creating GHZ State Circuit...")
     dev = qml.device('default.qubit', wires=3)
-    try:
-        num_wires = len(dev.wires) if hasattr(dev, 'wires') else getattr(dev, 'num_wires', 3)
-    except:
-        num_wires = 3
-    print(f"\n✓ Device created: {dev.name} ({num_wires} qubits)")
-    
-    # Define the quantum function
-    print("\n[Original Quantum Function]:")
-    print("   @qml.qnode(dev)")
-    print("   def ghz_state_circuit():")
-    print("       qml.Hadamard(wires=0)")
-    print("       qml.CNOT(wires=[0, 1])")
-    print("       qml.CNOT(wires=[0, 2])")
-    print("       return qml.sample()")
     
     @qml.qnode(dev)
     def ghz_state_circuit():
-        """Quantum function that creates a GHZ state."""
-        qml.Hadamard(wires=0)      # H gate on wire 0
-        qml.CNOT(wires=[0, 1])     # CNOT: control=0, target=1
-        qml.CNOT(wires=[0, 2])     # CNOT: control=0, target=2
-        return qml.sample()  # Measure all qubits
+        qml.Hadamard(wires=0)
+        qml.CNOT(wires=[0, 1])
+        qml.CNOT(wires=[0, 2])
+        return qml.sample()
     
-    # Set shots using the transform for newer PennyLane versions
-    from pennylane import set_shots
-    ghz_state_circuit = set_shots(ghz_state_circuit, shots=10)  # Minimal shots for compilation
-    
-    print("\n✓ Quantum function defined")
+    print("✓ Circuit defined")
 
-    # Step 3: Analyze compilation process
-    print("\n" + "=" * 70)
-    print("[Step 3] Compilation Process")
-    print("=" * 70)
-    print("   PennyLane compiles quantum functions when:")
-    print("   1. Function is decorated with @qml.qnode")
-    print("   2. Function is first called (lazy compilation)")
-    print("   3. Device prepares the circuit for execution")
-    
-    # Get the compiled circuit representation
-    print("\n[3.1] Inspecting QNode object...")
-    print(f"   Type: {type(ghz_state_circuit)}")
-    print(f"   Device: {ghz_state_circuit.device}")
-    print(f"   Number of wires: {ghz_state_circuit.device.num_wires if hasattr(ghz_state_circuit.device, 'num_wires') else num_wires}")
-    
-    # Step 4: Circuit visualization (shows compiled structure)
-    print("\n[Step 4] Compiled Circuit Visualization")
-    print("=" * 70)
-    # Get circuit structure without executing (draw can show the program structure)
+    # Step 3: Show circuit structure
+    print("\n[Step 3] Circuit Structure:")
     try:
-        # qml.draw() can show the circuit structure without execution
         circuit_text = qml.draw(ghz_state_circuit, show_all_wires=True)()
-        print("\n[Compiled Circuit Structure]:")
+        print("-" * 70)
         print(circuit_text)
+        print("-" * 70)
     except:
-        # If draw requires execution, just show the structure description
-        print("\n[Compiled Circuit Structure]:")
-        print("   - Circuit structure available via qml.draw()")
-        print("   - Shows gate sequence and wire connections")
-    
-    # Step 5: Analyze the tape (PennyLane's IR)
-    print("\n" + "=" * 70)
-    print("[Step 5] Intermediate Representation (Tape/QuantumTape)")
-    print("=" * 70)
-    print("   PennyLane uses QuantumTape as its internal IR")
-    print("   - Compilation is lazy (happens when circuit is first called)")
-    print("   - The compiled program is a QuantumTape structure")
-    print("   - We analyze the program structure, not execution results")
-    
-    # Access the program structure without executing
-    print("\n[QuantumTape Structure (Compiled Program)]:")
-    print("   - Operations: List of quantum operations")
-    print("   - Measurements: List of measurement operations")
-    print("   - Wires: Quantum wires (qubits) used")
-    print("   - Parameters: Classical parameters if any")
-    print("   - This is the compiled program output from PennyLane")
-    
-    # Step 6: Circuit decomposition analysis
-    print("\n" + "=" * 70)
-    print("[Step 6] Circuit Decomposition Analysis")
-    print("=" * 70)
-    
-    # Get operations list
-    print("\n[Operations in Compiled Circuit]:")
+        print("   H(0), CNOT(0,1), CNOT(0,2)")
+
+    # Step 4: Show operations
+    print("\n[Step 4] Operations in Circuit:")
     print("   1. Hadamard(wires=0)")
     print("   2. CNOT(wires=[0, 1])")
     print("   3. CNOT(wires=[0, 2])")
-    print("   4. sample()  # Measurement")
-    
-    print("\n[Gate Count]:")
-    print("   - Hadamard gates: 1")
-    print("   - CNOT gates: 2")
-    print("   - Measurement operations: 1 (sample all)")
-    print("   - Total operations: 4")
-    
-    # Step 7: Device-specific compilation
+    print("   4. sample()")
+
+    # Step 5: Circuit information
+    print("\n[Step 5] Circuit Information:")
+    print(f"   Type: {type(ghz_state_circuit)}")
+    print(f"   Device: {dev.name}")
+    print(f"   Wires: 3")
+
+    # Step 6: Compilation process
+    print("\n[Step 6] Compilation Process:")
+    print("   - PennyLane uses lazy compilation")
+    print("   - Circuit compiled when first called")
+    print("   - IR: QuantumTape (internal representation)")
+
+    # Step 7: Output compiled circuit as OpenQASM (hardware instructions)
     print("\n" + "=" * 70)
-    print("[Step 7] Device-Specific Compilation")
+    print("[Step 7] COMPILED OUTPUT: OpenQASM Format")
     print("=" * 70)
-    print(f"   Target device: {dev.name}")
-    print("   Device capabilities:")
-    print("   - Gate set: Native gates supported by device")
-    print("   - Wires: 3")
-    print("   - Shots: Configurable (set via set_shots transform)")
-    
-    print("\n   Default.qubit device:")
-    print("   - Simulator that executes circuits directly")
-    print("   - No gate decomposition needed (supports all standard gates)")
-    print("   - Compilation mainly involves circuit validation and optimization")
-    
-    # Step 8: Output compiled circuit as OpenQASM (low-level hardware instructions)
-    print("\n" + "=" * 70)
-    print("[Step 8] Compiled Circuit Output (OpenQASM Format)")
-    print("=" * 70)
-    print("   The compiler outputs a low-level circuit in OpenQASM format")
-    print("   - OpenQASM is a hardware instruction set format")
-    print("   - This is the compiled program output, not execution results")
+    print("   This is the compiled program output (hardware instructions)")
+    print("   NOT execution results (state vector or measurement counts)")
     
     try:
-        # Export to OpenQASM
         openqasm_str = qml.qasm(ghz_state_circuit)
-        print("\n[Compiled Circuit - OpenQASM]:")
+        print("\n[OpenQASM]:")
         print("-" * 70)
         print(openqasm_str)
         print("-" * 70)
     except:
         try:
-            # Alternative: use qml.transforms.to_openqasm
             from pennylane.transforms import to_openqasm
             openqasm_str = to_openqasm(ghz_state_circuit)()
-            print("\n[Compiled Circuit - OpenQASM]:")
+            print("\n[OpenQASM]:")
             print("-" * 70)
             print(openqasm_str)
             print("-" * 70)
         except:
             print("\n[Note] OpenQASM export requires circuit execution")
-            print("   Showing circuit structure instead (program representation)")
-            print("   Circuit structure: H(0), CNOT(0,1), CNOT(0,2)")
-    
-    # Step 9: How the circuit is consumed/executed
+            print("Circuit structure: H(0), CNOT(0,1), CNOT(0,2)")
+
+    # Step 8: Summary
+    print("\n[Step 8] Summary:")
+    print("   - PennyLane compiles Python functions to quantum circuits")
+    print("   - Output: QuantumTape (can be exported to OpenQASM)")
+    print("   - This is the compiled program, not execution results")
+
     print("\n" + "=" * 70)
-    print("[Step 9] Circuit Consumption and Execution")
+    print("COMPILATION COMPLETE")
     print("=" * 70)
-    print("   The compiled QNode can be:")
-    print("   1. Exported to OpenQASM (hardware instruction format)")
-    print("   2. Used for gradient computation: qml.grad(qnode)")
-    print("   3. Used in optimization: QNode used in cost functions")
-    
-    print("\n   Execution pipeline:")
-    print("   Python Function -> @qml.qnode -> QuantumTape -> OpenQASM -> Device -> Results")
-    
-    print("\n   Key characteristics:")
-    print("   - Lazy compilation: Circuit compiled on first call")
-    print("   - Can export to OpenQASM (hardware instructions)")
-    print("   - Automatic differentiation: Can compute gradients")
-    print("   - Device abstraction: Same function works on different devices")
-    
-    # Step 10: Comparison with original function
-    print("\n" + "=" * 70)
-    print("[Step 9] Original vs Compiled Comparison")
-    print("=" * 70)
-    print("\n[Original Function]:")
-    print("   - Python function with quantum operations")
-    print("   - Gate sequence: H(0), CNOT(0,1), CNOT(0,2)")
-    print("   - 3 operations + 1 measurement")
-    
-    print("\n[Compiled Representation]:")
-    print("   - QuantumTape containing operation sequence")
-    print("   - Same gate sequence preserved")
-    print("   - Device-specific optimizations may apply")
-    print("   - Ready for execution on target device")
-    
-    print("\n" + "=" * 70)
-    print("COMPILATION ANALYSIS COMPLETE")
-    print("=" * 70)
-    print("\nKEY FINDINGS:")
-    print("- PennyLane uses Python functions as circuit definitions")
-    print("- @qml.qnode decorator triggers compilation")
-    print("- IR: QuantumTape (internal representation)")
-    print("- Compilation is lazy (happens on first call)")
-    print("- Can export to OpenQASM (hardware instruction format)")
-    print("- Circuit structure preserved, device-specific optimizations applied")
-    print("- Supports automatic differentiation and device abstraction")
+    print("\nOutput: OpenQASM (hardware instruction format)")
+    print("This is the compiled program, not execution results.")
 
 except ImportError:
     print("\n❌ ERROR: PennyLane not installed")
