@@ -1,0 +1,41 @@
+/**
+ * GHZ State Program for ScaffCC Compiler
+ * =======================================
+ * 
+ * This program creates a GHZ (Greenberger–Horne–Zeilinger) state in Scaffold:
+ * 1. Creates a 3-qubit GHZ state: (|000⟩ + |111⟩)/√2
+ * 2. Measures all qubits
+ * 
+ * GHZ STATE EXPLANATION:
+ * ----------------------
+ * - H gate on qubit 0: Creates superposition (|0⟩ + |1⟩)/√2
+ * - CNOT(0,1): Entangles qubit 0 with qubit 1
+ * - CNOT(0,2): Entangles qubit 0 with qubit 2
+ * - Result: GHZ state (|000⟩ + |111⟩)/√2
+ * - When measured, we get either |000⟩ or |111⟩ with 50% probability each
+ */
+
+// GHZ State Program for ScaffCC Compiler
+// Note: ScaffCC can compile OpenQASM format
+// This is OpenQASM 2.0 syntax, which ScaffCC supports
+
+OPENQASM 2.0;
+include "qelib1.inc";
+
+qreg q[3];           // Allocate 3 qubits
+creg c[3];           // Allocate 3 classical bits for measurement
+
+// Initialize all qubits to |0⟩ (default)
+
+// Apply Hadamard gate to qubit 0
+h q[0];
+
+// Apply CNOT gates to create entanglement
+cx q[0], q[1];    // CNOT: control=q[0], target=q[1]
+cx q[0], q[2];    // CNOT: control=q[0], target=q[2]
+
+// Measure all qubits
+measure q[0] -> c[0];
+measure q[1] -> c[1];
+measure q[2] -> c[2];
+

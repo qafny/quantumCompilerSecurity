@@ -1,0 +1,30 @@
+# GHZ State Program for Quil/Quilc Compiler
+# ==========================================
+# 
+# This program creates a GHZ (Greenberger–Horne–Zeilinger) state in Quil:
+# 1. Creates a 3-qubit GHZ state: (|000⟩ + |111⟩)/√2
+# 2. Measures all qubits
+# 
+# GHZ STATE EXPLANATION:
+# ----------------------
+# - H gate on qubit 0: Creates superposition (|0⟩ + |1⟩)/√2
+# - CNOT(0,1): Entangles qubit 0 with qubit 1
+# - CNOT(0,2): Entangles qubit 0 with qubit 2
+# - Result: GHZ state (|000⟩ + |111⟩)/√2
+# - When measured, we get either |000⟩ or |111⟩ with 50% probability each
+
+# Allocate classical memory for measurement results
+DECLARE ro BIT[3]
+
+# Apply Hadamard gate to qubit 0
+H 0
+
+# Apply CNOT gates to create entanglement
+CNOT 0 1    # CNOT: control=0, target=1
+CNOT 0 2    # CNOT: control=0, target=2
+
+# Measure all qubits
+MEASURE 0 ro[0]
+MEASURE 1 ro[1]
+MEASURE 2 ro[2]
+

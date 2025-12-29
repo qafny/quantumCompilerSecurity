@@ -1,0 +1,35 @@
+/*
+ * GHZ State Program for Silq Compiler
+ * ====================================
+ * 
+ * This program creates a GHZ (Greenberger–Horne–Zeilinger) state in Silq:
+ * 1. Creates a 3-qubit GHZ state: (|000⟩ + |111⟩)/√2
+ * 2. Measures all qubits
+ * 
+ * GHZ STATE EXPLANATION:
+ * ----------------------
+ * - H gate on qubit 0: Creates superposition (|0⟩ + |1⟩)/√2
+ * - CNOT(0,1): Entangles qubit 0 with qubit 1
+ * - CNOT(0,2): Entangles qubit 0 with qubit 2
+ * - Result: GHZ state (|000⟩ + |111⟩)/√2
+ * - When measured, we get either |000⟩ or |111⟩ with 50% probability each
+ */
+
+def main() {
+  // Allocate 3 qubits, all initialized to |0⟩
+  q0 := 0:𝔹;
+  q1 := 0:𝔹;
+  q2 := 0:𝔹;
+  
+  // Apply Hadamard gate to qubit 0
+  q0 := H(q0);
+  
+  // Apply CNOT gates to create entanglement
+  q0, q1 := CNOT(q0, q1);  // CNOT: control=q0, target=q1
+  q0, q2 := CNOT(q0, q2);  // CNOT: control=q0, target=q2
+  
+  // Measure all qubits (in Silq, measurement happens automatically)
+  // Return the measurement results
+  return (q0, q1, q2);
+}
+
